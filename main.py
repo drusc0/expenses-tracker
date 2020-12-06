@@ -1,23 +1,37 @@
+import logging
+import random
+import string
+import time
+import uvicorn
+
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from google.cloud import datastore
+from bank_expenses.handlers import ExpensesHandler
+
+
+logging.config.fileConfig('logging.conf', disable_existing_loggers=False)
+logger = logging.getLogger(__name__)
 
 # fastapi objects and dependencies
 app = FastAPI()
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
 templates = Jinja2Templates(directory="templates")
 
-# google data store, storage of preference
-datastore_client = datastore.Client()
 
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    idem = ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
+    # logger.info(f"rid={idem} start request path={request.url.path}")
+    start_time = time.time()
+    response = await call_next(request)
+    process_time = (time.time() - start_time) * 1000
+    formatted_process_time = '{0:.2f}'.format(process_time)
+    # logger.info(f"rid={idem} completed_in={formatted_process_time}ms status_code={response.status_code}")
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+    return response
 
 
 #######################################
@@ -28,27 +42,24 @@ async def root():
 #######################################
 
 @app.get("/expenses", response_class=HTMLResponse)
-async def expenses(req: Request):
-    entities = []
-    query = datastore_client.query(kind='expenses')
+def expenses(req: Request):
+    try:
+        handler = ExpensesHandler(templates)
+        return handler.handle(req)
+    except Exception as err:
+        logger.error("Unable to find expenses")
+        return templates.TemplateResponse("error/404.html", {"request": req})
 
-    for e in query.fetch():
-        entities.append(e)
-
-    expenses = []
-    skip = 3
-    for i in range(0, len(entities), skip):
-        expenses.append(entities[i:i+skip])
-
-    return templates.TemplateResponse("index.html", {
-        "request": req,
-        "expenses": expenses
-    })
 
 @app.get("/expense/{entity_id}")
 async def expense(entity_id):
     return {'entity_id': entity_id}
 
+
 @app.post("/update_category/{entity_id}")
 async def update_category(entity_id):
     pass
+
+
+if __name__ == '__main__':
+    uvicorn.run(app)

@@ -1,29 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    <meta charset="UTF-8">
-    <title>Expenses</title>
-</head>
-<body>
-    <div class="container">
-        {% for row in expenses %}
-        <div class="row">
-            {% for expense in row %}
-            <div class="col">
-                <div class="card" style="width: 18rem;">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ expense.expense_location }}</h5>
-                        <p class="card-text">{{ "$%.2f" | format(expense.amount) }}</p>
-                    </div>
-                    <div class="card-footer text-muted text-center">
-                        {{ expense.expense_date.strftime('%Y-%m-%d') }}
-                    </div>
+{% extends "./base.html" %}
+{% block title %}Chase expenses{% endblock %}
+{% block content %}
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="mx-auto order-0">
+            <span class="navbar-brand mx-auto" href="#">Chase Expenses</span>
+        </div>
+    </nav>
+    <br>
+    {% for row in expenses %}
+    <div class="row">
+        {% for expense in row %}
+        <div class="col">
+            <div class="card" style="width: 18rem;">
+                <div class="card-body">
+                    <h5 class="card-title">{{ expense.expense_location }}</h5>
+                    <p class="card-text">{{ "$%.2f" | format(expense.amount) }}</p>
+                </div>
+                <div class="card-footer text-muted text-center">
+                    {{ expense.expense_date.strftime('%Y-%m-%d') }}
                 </div>
             </div>
-            {% endfor %}
         </div>
         {% endfor %}
     </div>
-</body>
-</html>
+    <br>
+    {% endfor %}
+{% endblock %}
