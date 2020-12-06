@@ -1,0 +1,60 @@
+{% extends "./base.html" %}
+{% block title %}Chase expenses{% endblock %}
+{% block js_script %}
+    <script>
+    $(document).ready(function(){
+        $("form").submit(function(){
+            alert("Submitted");
+        });
+    });
+    </script>
+{% endblock %}
+{% block content %}
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+        <div class="mx-auto order-0">
+            <span class="navbar-brand mx-auto" href="#">Chase Expenses: {{ "$%.2f" | format(total_amt) }}</span>
+        </div>
+    </nav>
+    <br>
+    <div class="row">
+        <div class="offset-2 col-8">
+            <div class="card card-body">
+                <form>
+                    <div class="form-group row">
+                        <label for="expenseName" class="col-sm-2 col-form-label">Expense</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control-plaintext" id="expenseName" value="{{ expense.expense_location }}">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="expenseAmount" class="col-sm-2 col-form-label">Amount</label>
+                        <div class="col-sm-10">
+                            <input type="text" readonly class="form-control-plaintext" id="expenseAmount" value='{{ "$%.2f"| format(expense.amount) }}'>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="expenseCategory" class="col-sm-2 col-form-label">Category</label>
+                        <div class="col-sm-10">
+                            <select id="expenseCategory" class="custom-select">
+                                <option selected>Categories</option>
+                                <option value="alcohol">Alcohol</option>
+                                <option value="cofee">Coffee</option>
+                                <option value="groceries">Groceries</option>
+                                <option value="pet">Pet</option>
+                                <option value="takeout">Takeout</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="" id="hideExpenseCheck">
+                        <label class="form-check-label" for="hideExpenseCheck">
+                            Hide Expense
+                        </label>
+                    </div>
+                    <br>
+                    <button type="submit" class="btn btn-primary mb-2">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

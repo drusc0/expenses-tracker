@@ -1,9 +1,18 @@
 {% extends "./base.html" %}
 {% block title %}Chase expenses{% endblock %}
+{% block js_script %}
+    <script>
+    $(document).ready(function(){
+        $("form").submit(function(){
+            alert("Submitted");
+        });
+    });
+    </script>
+{% endblock %}
 {% block content %}
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
         <div class="mx-auto order-0">
-            <span class="navbar-brand mx-auto" href="#">Chase Expenses</span>
+            <span class="navbar-brand mx-auto" href="#">Chase Expenses: {{ "$%.2f" | format(total_amt) }}</span>
         </div>
     </nav>
     <br>
@@ -13,7 +22,11 @@
         <div class="col">
             <div class="card" style="width: 18rem;">
                 <div class="card-body">
-                    <h5 class="card-title">{{ expense.expense_location }}</h5>
+                    <h5 class="card-title">
+                        <a href="{{ '/expense/%s' %expense.id | urlencode }}">
+                            {{ expense.expense_location }}
+                        </a>
+                    </h5>
                     <p class="card-text">{{ "$%.2f" | format(expense.amount) }}</p>
                 </div>
                 <div class="card-footer text-muted text-center">

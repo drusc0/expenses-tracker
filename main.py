@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from bank_expenses.handlers import ExpensesHandler
+from bank_expenses.handlers import ExpenseHandler, ExpensesHandler
 
 
 logging.config.fileConfig('logging.conf', disable_existing_loggers=False)
@@ -47,13 +47,18 @@ def expenses(req: Request):
         handler = ExpensesHandler(templates)
         return handler.handle(req)
     except Exception as err:
-        logger.error("Unable to find expenses")
+        logger.error(f"Unable to find expenses ({err})")
         return templates.TemplateResponse("error/404.html", {"request": req})
 
 
-@app.get("/expense/{entity_id}")
-async def expense(entity_id):
-    return {'entity_id': entity_id}
+@app.get("/expense/{expense_id}")
+async def expense(expense_id, req: Request):
+    try:
+        handler = ExpenseHandler(templates)
+        return handler.handle(req)
+    except Exception as err:
+        logger.error(f"Unable to find expense id: {expense_id} ({err})")
+        return templates.TemplateResponse("error/404.html", {"request": req})
 
 
 @app.post("/update_category/{entity_id}")
