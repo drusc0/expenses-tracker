@@ -27,7 +27,13 @@
                             {{ expense.expense_location }}
                         </a>
                     </h5>
-                    <p class="card-text">{{ "$%.2f" | format(expense.amount) }}</p>
+                    <p class="card-text">Amount: {{ "$%.2f" | format(expense.amount) }}</p>
+                    {% if expense.category %}
+                    <p class="card-text">Category: {{ expense.category }}</p>
+                    {% endif %}
+                    {% if expense.hide %}
+                    <p class="card-text">Hide?: {{ expense.hide }}</p>
+                    {% endif %}
                 </div>
                 <div class="card-footer text-muted text-center">
                     {{ expense.expense_date.strftime('%Y-%m-%d') }}

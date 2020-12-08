@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from bank_expenses.handlers import ExpenseHandler, ExpensesHandler
+from bank_expenses.handlers import ExpenseHandler, ExpensesHandler, UpdateExpenseHandler
 
 
 logging.config.fileConfig('logging.conf', disable_existing_loggers=False)
@@ -51,7 +51,7 @@ def expenses(req: Request):
         return templates.TemplateResponse("error/404.html", {"request": req})
 
 
-@app.get("/expense/{expense_id}")
+@app.get("/expense/{expense_id}", response_class=HTMLResponse)
 async def expense(expense_id, req: Request):
     try:
         handler = ExpenseHandler(templates)
@@ -61,9 +61,20 @@ async def expense(expense_id, req: Request):
         return templates.TemplateResponse("error/404.html", {"request": req})
 
 
-@app.post("/update_category/{entity_id}")
-async def update_category(entity_id):
-    pass
+@app.post("/updateExpense")
+async def update_expense(req: Request):
+    try:
+        body = await req.form()
+        params = {
+            'expense_id': body['id'],
+            'category': body['category'],
+            'hide': body['hide']
+        }
+        handler = UpdateExpenseHandler(templates)
+        return handler.handle(req, params)
+    except Exception as err:
+        logger.error(f"Unable to find expense id ({err})")
+        return templates.TemplateResponse("error/404.html", {"request": req})
 
 
 if __name__ == '__main__':

@@ -1,5 +1,6 @@
 import logging
 
+from typing import List, Tuple
 from google.cloud import datastore
 
 
@@ -20,8 +21,8 @@ class DatastoreDB:
     def __init__(self):
         self.datastore = datastore.Client()
 
-    def get_all(self):
-        return self.query(kind=self.KIND, order=['-expense_date'])
+    def get_all(self, filters: List[Tuple]):
+        return self.query(self.KIND, filters)
 
     def get_by_key(self, name_or_id: str = ''):
         if name_or_id is None:
@@ -37,6 +38,27 @@ class DatastoreDB:
             logger.error(f"Fetch by key failed with error: {err}")
             raise ValueError(err)
 
-    def query(self, kind, order):
-        logger.info("querying...")
-        return self.datastore.query(kind=kind, order=order).fetch()
+    def update_by_key(self, name_or_id: str = '', **kwargs):
+        if name_or_id is None:
+            raise KeyError(f"EntityKey ID not valid: {name_or_id}")
+
+        try:
+            entity = self.get_by_key(name_or_id)
+            for k, v in kwargs.items():
+                if not v.is_empty():
+                    entity[k] = v.get()
+
+            self.datastore.put(entity)
+        except ValueError as err:
+            logger.error(f"Unable to update entity ({err}")
+            raise RuntimeError("Unable to update key")
+        except Exception as err:
+            logger.error(f"Something else went wrong while updating ({err})")
+            raise RuntimeError("Unable to update key")
+
+    def query(self, kind: str, filters: List[str]):
+        logger.info("Querying...")
+        q = self.datastore.query(kind=kind)
+        for f in filters:
+            q.add_filter(f[0], f[1], f[2])
+        return q.fetch()

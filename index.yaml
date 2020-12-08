@@ -1,0 +1,6 @@
+indexes:
+- kind: expenses
+  properties:
+  - name: hide
+  - name: expense_date
+    direction: desc
