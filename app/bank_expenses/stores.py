@@ -1,3 +1,4 @@
+import os
 import logging
 
 from typing import List, Tuple
@@ -5,6 +6,18 @@ from google.cloud import datastore
 
 
 logger = logging.getLogger(__name__)
+
+DS_CREDENTIAL_KEY = "GOOGLE_APPLICATION_CREDENTIALS"
+DS_CREDENTIAL_FN = "chase-expenses-6c9036e3b68b.json"
+
+# Set the environmental variable to be able to authenticate using default
+# service account, and avoiding to pass the credentials
+if not os.environ.get(DS_CREDENTIAL_KEY):
+    dir_name = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    credential_path = os.path.join(dir_name, DS_CREDENTIAL_FN)
+    print(f"Credential path: {credential_path}")
+    os.environ[DS_CREDENTIAL_KEY] = credential_path
+
 # google data store, storage of preference
 datastore_client = datastore.Client()
 
