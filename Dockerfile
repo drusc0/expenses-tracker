@@ -15,5 +15,6 @@ RUN pip install -r /app/requirements.txt \
     && rm -rf /root/.cache/pip
 
 COPY . /app/
-EXPOSE 8000
-CMD ["python", "app/main.py"]
+EXPOSE 80
+
+CMD [ "python", "app/main.py" ]
