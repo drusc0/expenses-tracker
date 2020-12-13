@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from bank_expenses.handlers import ExpenseHandler, ExpensesHandler, UpdateExpenseHandler
+from bank_expenses.handlers import ExpenseHandler, ExpensesHandler, UpdateExpenseHandler, CreateFormHandler, CreateExpenseHandler
 
 
 logging.config.fileConfig('logging.conf', disable_existing_loggers=False)
@@ -61,6 +61,34 @@ async def expense(expense_id, req: Request):
         return templates.TemplateResponse("error/404.html", {"request": req})
 
 
+@app.get("/create", response_class=HTMLResponse)
+async def create(req: Request):
+    try:
+        handler = CreateFormHandler(templates)
+        return handler.handle(req)
+    except Exception as err:
+        logger.error(f"Something went wrong while loading create form ({err})")
+        return templates.TemplateResponse("error/404.html", {"request": req})
+
+
+@app.post("/createExpense")
+async def create_expense(req: Request):
+    try:
+        body = await req.form()
+        params = {
+            'amount': float(body['amount']),
+            'expense_date': body['date'],
+            'expense_location': body['location'],
+            'category': body['category'],
+            'hide': body['hide']
+        }
+        handler = CreateExpenseHandler()
+        return handler.handle(req, params)
+    except Exception as err:
+        logger.error(f"Unable to create expense ({err})")
+        return templates.TemplateResponse("error/404.html", {"request": req})
+
+
 @app.post("/updateExpense")
 async def update_expense(req: Request):
     try:
@@ -70,7 +98,7 @@ async def update_expense(req: Request):
             'category': body['category'],
             'hide': body['hide']
         }
-        handler = UpdateExpenseHandler(templates)
+        handler = UpdateExpenseHandler()
         return handler.handle(req, params)
     except Exception as err:
         logger.error(f"Unable to find expense id ({err})")

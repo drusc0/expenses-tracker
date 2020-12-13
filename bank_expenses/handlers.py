@@ -94,9 +94,8 @@ class ExpenseHandler(Handler):
 
 
 class UpdateExpenseHandler(Handler):
-    def __init__(self, templates):
+    def __init__(self):
         super().__init__()
-        self.templates = templates
 
     def handle(self, request: Request, params: Dict):
         if not request:
@@ -124,4 +123,41 @@ class UpdateExpenseHandler(Handler):
             """
         except Exception as err:
             logger.error(f"Unable to update expense id: {expense_id} - {err}")
+            raise RuntimeError("Update failed")
+
+
+class CreateFormHandler(Handler):
+    def __init__(self, templates):
+        super().__init__()
+        self.templates = templates
+
+    def handle(self, request: Request):
+        return self.templates.TemplateResponse("create.html", {"request": request})
+
+class CreateExpenseHandler(Handler):
+    def __init__(self):
+        super().__init__()
+
+    def handle(self, request: Request, params: Dict):
+        if not request:
+            raise RuntimeError("Missing request")
+
+        if any(x is None or x == '' for x in params.values()):
+            raise RuntimeError("All fields in form need to be filled")
+
+        logger.info(f"Creating expense {params.values()}")
+        try:
+            key = self.db.create(**params)
+            return """
+            <html>
+                <head>
+                    <title>Some HTML in here</title>
+                </head>
+                <body>
+                    <h1>Successful</h1>
+                </body>
+            </html>
+            """
+        except Exception as err:
+            logger.error(f"Unable to create expense - {err}")
             raise RuntimeError("Update failed")

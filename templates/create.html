@@ -3,7 +3,7 @@
 {% block content %}
     <nav class="navbar navbar-expand-md navbar-dark bg-dark">
         <div class="mx-auto order-0">
-            <span class="navbar-brand mx-auto" href="#">Chase Expenses: {{ "$%.2f" | format(total_amt) }}</span>
+            <span class="navbar-brand mx-auto" href="#">Create Expense</span>
         </div>
     </nav>
     <br>
@@ -12,20 +12,26 @@
             <div class="card card-body">
                 <form id="updateForm">
                     <div class="form-group row">
-                        <label for="expenseName" class="col-sm-2 col-form-label">Expense</label>
-                        <div class="col-sm-10">
-                            <input type="text" readonly class="form-control-plaintext" id="expenseName" value="{{ expense.expense_location }}">
+                        <label for="expenseName" class="col-sm-3 col-form-label">Name/Location</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="expenseName" value="">
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="expenseAmount" class="col-sm-2 col-form-label">Amount</label>
-                        <div class="col-sm-10">
-                            <input type="text" readonly class="form-control-plaintext" id="expenseAmount" value='{{ "$%.2f"| format(expense.amount) }}'>
+                        <label for="expenseAmount" class="col-sm-3 col-form-label">Amount</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="expenseAmount" value=''>
                         </div>
                     </div>
                     <div class="form-group row">
-                        <label for="expenseCategory" class="col-sm-2 col-form-label">Category</label>
-                        <div class="col-sm-10">
+                        <label for="expenseDate" class="col-sm-3 col-form-label">Date</label>
+                        <div class="col-sm-9">
+                            <input type="text" class="form-control" id="expenseDate" value=''>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="expenseCategory" class="col-sm-3 col-form-label">Category</label>
+                        <div class="col-sm-9">
                             <select id="expenseCategory" class="custom-select">
                                 <option selected value="unknown">Unknown</option>
                                 <option value="alcohol">Alcohol</option>
@@ -46,7 +52,7 @@
                         </label>
                     </div>
                     <br>
-                    <button type="submit" class="btn btn-primary mb-2">Update</button>
+                    <button type="submit" class="btn btn-primary mb-2">Create</button>
                 </form>
                 <div id="info"></div>
             </div>
@@ -57,9 +63,9 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script>
         $( document ).ready(function() {
-            $('#updateForm button').on('click', function(event) {
+            $('#createForm button').on('click', function(event) {
                 event.preventDefault();
-                console.log("Updating expense:", event);
+                console.log("Creating a manual expense:", event);
 
                 // get the data from selection and checkbox
                 let hideExpense = $('#hideExpenseCheck').is(':checked')
@@ -67,9 +73,11 @@
                 console.log("Data options?", hideExpense, categoryExpense);
 
                 $.post(
-                    "{{ '/updateExpense' | urlencode }}",
+                    "{{ '/createExpense' | urlencode }}",
                     {
-                        id: "{{ expense.id }}",
+                        amount: amountExpense,
+                        expense_date: expenseData,
+                        expense_location: expenseLocation,
                         hide: hideExpense,
                         category: categoryExpense
                     },

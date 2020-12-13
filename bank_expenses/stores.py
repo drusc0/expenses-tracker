@@ -38,6 +38,15 @@ class DatastoreDB:
             logger.error(f"Fetch by key failed with error: {err}")
             raise ValueError(err)
 
+    def create(self, **kwargs):
+        key = self.datastore.key(self.KIND)
+        entity = datastore.Entity(key)
+        entity.update(**kwargs)
+
+        self.datastore.put(entity)
+
+        return entity.key
+
     def update_by_key(self, name_or_id: str = '', **kwargs):
         if name_or_id is None:
             raise KeyError(f"EntityKey ID not valid: {name_or_id}")
