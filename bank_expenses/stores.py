@@ -43,9 +43,12 @@ class DatastoreDB:
         entity = datastore.Entity(key)
         entity.update(**kwargs)
 
-        self.datastore.put(entity)
-
-        return entity.key
+        try:
+            self.datastore.put(entity)
+            return entity.key
+        except Exception as err:
+            logger.error(f"Unable to create new entity: {entity} ({err})")
+            raise RuntimeError("Unable to create expense")
 
     def update_by_key(self, name_or_id: str = '', **kwargs):
         if name_or_id is None:

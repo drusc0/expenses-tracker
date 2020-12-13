@@ -144,6 +144,8 @@ class CreateExpenseHandler(Handler):
 
         if any(x is None or x == '' for x in params.values()):
             raise RuntimeError("All fields in form need to be filled")
+        params['expense_date'] = datetime.strptime(params['expense_date'], '%Y-%m-%d')\
+            .astimezone(timezone('US/Pacific'))
 
         logger.info(f"Creating expense {params.values()}")
         try:

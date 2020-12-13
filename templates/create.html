@@ -10,23 +10,23 @@
     <div class="row">
         <div class="offset-2 col-8">
             <div class="card card-body">
-                <form id="updateForm">
+                <form id="createForm">
                     <div class="form-group row">
                         <label for="expenseName" class="col-sm-3 col-form-label">Name/Location</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="expenseName" value="">
+                            <input type="text" class="form-control" id="expenseName" value='' required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="expenseAmount" class="col-sm-3 col-form-label">Amount</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="expenseAmount" value=''>
+                            <input type="text" class="form-control" id="expenseAmount" value='' required>
                         </div>
                     </div>
                     <div class="form-group row">
                         <label for="expenseDate" class="col-sm-3 col-form-label">Date</label>
                         <div class="col-sm-9">
-                            <input type="text" class="form-control" id="expenseDate" value=''>
+                            <input type="text" class="form-control" id="expenseDate" placeholder='YYYY-MM-DD' value='' required>
                         </div>
                     </div>
                     <div class="form-group row">
@@ -68,16 +68,19 @@
                 console.log("Creating a manual expense:", event);
 
                 // get the data from selection and checkbox
-                let hideExpense = $('#hideExpenseCheck').is(':checked')
-                let categoryExpense = $('#expenseCategory').find(':selected').val()
+                let amountExpense = $('#expenseAmount').val();
+                let expenseDate = $('#expenseDate').val();
+                let expenseLocation = $('#expenseName').val();
+                let hideExpense = $('#hideExpenseCheck').is(':checked');
+                let categoryExpense = $('#expenseCategory').find(':selected').val();
                 console.log("Data options?", hideExpense, categoryExpense);
 
                 $.post(
                     "{{ '/createExpense' | urlencode }}",
                     {
                         amount: amountExpense,
-                        expense_date: expenseData,
-                        expense_location: expenseLocation,
+                        date: expenseDate,
+                        location: expenseLocation,
                         hide: hideExpense,
                         category: categoryExpense
                     },
