@@ -9,7 +9,7 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 
-from bank_expenses.handlers import ExpenseHandler, ExpensesHandler, UpdateExpenseHandler, CreateFormHandler, CreateExpenseHandler
+from .bank_expenses.handlers import ExpenseHandler, ExpensesHandler, UpdateExpenseHandler, CreateFormHandler, CreateExpenseHandler
 
 
 logging.config.fileConfig('logging.conf', disable_existing_loggers=False)
